@@ -1,0 +1,161 @@
+---
+- hosts: swarmserver
+  remote_user: root
+  tasks:
+  - name: apt update
+    apt: update_cache=yes
+  - name: ensure python-jsondiff is installed
+    apt: name=python-jsondiff update_cache=yes
+  - name: deploy mongo stack from file
+    become: yes
+    become_user: anatoli
+    docker_stack:
+      state: present
+      name: mongo
+      compose_yaml:
+         version: "3.7"
+         networks:
+             stacknet:
+                     driver: overlay
+                     attachable: true
+         services:
+           mongo-cfg0:
+             image: mongo
+             networks: 
+               - stacknet
+             command: mongod --configsvr --bind_ip_all --port 27017 --replSet c 
+             deploy:
+               replicas: 1
+               update_config:
+                 parallelism: 3
+                 delay: 50s
+                 failure_action: rollback
+               restart_policy:
+                 condition: on-failure
+           mongo-cfg1:
+             image: mongo
+             networks: 
+               - stacknet
+             command: mongod --configsvr --bind_ip_all --port 27017 --replSet c
+             deploy:
+               replicas: 1
+               update_config:
+                 parallelism: 3
+                 delay: 50s
+                 failure_action: rollback
+               restart_policy:
+                 condition: on-failure
+           mongo-cfg2:
+             image: mongo
+             networks: 
+               - stacknet
+             command: mongod --configsvr --bind_ip_all --port 27017 --replSet c
+             deploy:
+               replicas: 1
+               update_config:
+                 parallelism: 3
+                 delay: 50s
+                 failure_action: rollback
+               restart_policy:
+                 condition: on-failure
+         
+           mongo-a0:
+             image: mongo
+             networks: 
+               - stacknet
+             command: mongod --shardsvr --bind_ip_all --port 27017 --replSet a --smallfiles --oplogSize 50
+             deploy:
+               replicas: 1
+               update_config:
+                 parallelism: 3
+                 delay: 50s
+                 failure_action: rollback
+               restart_policy:
+                 condition: on-failure
+           mongo-a1:
+             image: mongo
+             networks: 
+               - stacknet
+             command: mongod --shardsvr --bind_ip_all --port 27017 --replSet a --smallfiles --oplogSize 50
+             deploy:
+               replicas: 1
+               update_config:
+                 parallelism: 3
+                 delay: 50s
+                 failure_action: rollback
+               restart_policy:
+                 condition: on-failure
+           mongo-a2:
+             image: mongo
+             networks: 
+               - stacknet
+             command: mongod --shardsvr --bind_ip_all --port 27017 --replSet a --smallfiles --oplogSize 50
+             deploy:
+               replicas: 1
+               update_config:
+                 parallelism: 3
+                 delay: 50s
+                 failure_action: rollback
+               restart_policy:
+                 condition: on-failure
+           mongo-b0:
+             image: mongo
+             networks: 
+               - stacknet
+             command: mongod --shardsvr --bind_ip_all --port 27017 --replSet b --smallfiles --oplogSize 50
+             deploy:
+               replicas: 1
+               update_config:
+                 parallelism: 3
+                 delay: 50s
+                 failure_action: rollback
+               restart_policy:
+                 condition: on-failure
+           mongo-b1:
+             image: mongo
+             networks: 
+               - stacknet
+             command: mongod --shardsvr --bind_ip_all --port 27017 --replSet b --smallfiles --oplogSize 50
+             deploy:
+               replicas: 1
+               update_config:
+                 parallelism: 3
+                 delay: 50s
+                 failure_action: rollback
+               restart_policy:
+                 condition: on-failure
+           mongo-b2:
+             image: mongo
+             networks: 
+               - stacknet
+             command: mongod --shardsvr --bind_ip_all --port 27017 --replSet b --smallfiles --oplogSize 50
+             deploy:
+               replicas: 1
+               update_config:
+                 parallelism: 3
+                 delay: 50s
+                 failure_action: rollback
+               restart_policy:
+                 condition: on-failure
+           balancer:
+             image: mongo
+             networks: 
+               - stacknet
+             ports: 
+               -  27017:27017
+             depends_on:
+               - mongo-cfg0
+               - mongo-cfg1
+               - mongo-cfg2 
+             command: mongos --configdb c/mongo-cfg0:27017,mongo-cfg1:27017,mongo-cfg2:27017 --bind_ip_all --port 27017 
+             deploy:
+               replicas: 3
+               update_config:
+                 parallelism: 3
+                 delay: 50s
+                 failure_action: rollback
+               restart_policy:
+                 condition: on-failure
+  - name: 
+    become: yes
+    become_user: anatoli
