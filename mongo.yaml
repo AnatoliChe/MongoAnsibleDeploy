@@ -7,8 +7,7 @@
   - name: ensure python-jsondiff is installed
     apt: name=python-jsondiff update_cache=yes
   - name: deploy mongo stack from file
-    become: yes
-    become_user: anatoli
+    remote_user: anatoli
     docker_stack:
       state: present
       name: mongo
@@ -156,6 +155,3 @@
                  failure_action: rollback
                restart_policy:
                  condition: on-failure
-  - name: 
-    become: yes
-    become_user: anatoli
