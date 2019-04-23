@@ -155,3 +155,97 @@
                  failure_action: rollback
                restart_policy:
                  condition: on-failure
+  - name: create shard a 
+    remote_user: anatoli
+    # docker run --network=mongo_stacknet  -ti mongo  bash -c "echo 'rs.initiate({_id : \"a\", members: 
+    # [{ _id : 0, host : \"mongo-a0\" },{ _id : 1, host : \"mongo-a1\" },{ _id : 2, host : \"mongo-a2\" }]})' | mongo --host mongo-a0"
+    shell: !!binary | 
+        ZG9ja2VyIHJ1biAtLW5ldHdvcms9bW9uZ29fc3RhY2tuZXQgIC10aSBtb25nbyAgYmFzaCAtYyAi
+        ZWNobyAncnMuaW5pdGlhdGUoe19pZCA6IFwiYVwiLCBtZW1iZXJzOiBbeyBfaWQgOiAwLCBob3N0
+        IDogXCJtb25nby1hMFwiIH0seyBfaWQgOiAxLCBob3N0IDogXCJtb25nby1hMVwiIH0seyBfaWQg
+        OiAyLCBob3N0IDogXCJtb25nby1hMlwiIH1dfSknIHwgbW9uZ28gLS1ob3N0IG1vbmdvLWEwIgo=
+    register: result
+  - debug: var=result.stdout_lines
+  - name: check shard a 
+    remote_user: anatoli
+    # docker run --network=mongo_stacknet  -ti mongo  bash -c "echo 'rs.status()' | mongo --host mongo-a0"
+    shell: docker run --network=mongo_stacknet  -ti mongo  bash -c "echo 'rs.status()' | mongo --host mongo-a0"
+    register: result
+  - debug: var=result.stdout_lines
+  - name: create shard b
+    remote_user: anatoli
+    # docker run --network=mongo_stacknet  -ti mongo  bash -c "echo 'rs.initiate({_id : \"b\", members: 
+    # [{ _id : 0, host : \"mongo-b0\" },{ _id : 1, host : \"mongo-b1\" },{ _id : 2, host : \"mongo-b2\" }]})' | mongo --host mongo-b0"
+    shell: !!binary | 
+        ZG9ja2VyIHJ1biAtLW5ldHdvcms9bW9uZ29fc3RhY2tuZXQgIC10aSBtb25nbyAgYmFzaCAtYyAi
+        ZWNobyAncnMuaW5pdGlhdGUoe19pZCA6IFwiYlwiLCBtZW1iZXJzOiBbeyBfaWQgOiAwLCBob3N0
+        IDogXCJtb25nby1iMFwiIH0seyBfaWQgOiAxLCBob3N0IDogXCJtb25nby1iMVwiIH0seyBfaWQg
+        OiAyLCBob3N0IDogXCJtb25nby1iMlwiIH1dfSknIHwgbW9uZ28gLS1ob3N0IG1vbmdvLWIwIgo=
+    register: result
+  - debug: var=result.stdout_lines
+  - name: check shard b 
+    remote_user: anatoli
+    # docker run --network=mongo_stacknet  -ti mongo  bash -c "echo 'rs.status()' | mongo --host mongo-b0"
+    shell: docker run --network=mongo_stacknet  -ti mongo  bash -c "echo 'rs.status()' | mongo --host mongo-b0"
+    register: result
+  - debug: var=result.stdout_lines
+  - name: create config servers pool
+    remote_user: anatoli
+    # docker run --network=mongo_stacknet  -ti mongo  bash -c "echo 'rs.initiate({_id: \"c\",configsvr: true, members: 
+    # [{ _id : 0, host : \"mongo-cfg0\" },{ _id : 1, host : \"mongo-cfg1\" }, { _id : 2, host : \"mongo-cfg2\" }]})' | mongo --host mongo-cfg0"
+    shell: !!binary | 
+        ZG9ja2VyIHJ1biAtLW5ldHdvcms9bW9uZ29fc3RhY2tuZXQgIC10aSBtb25nbyAgYmFzaCAtYyAi
+        ZWNobyAncnMuaW5pdGlhdGUoe19pZDogXCJjXCIsY29uZmlnc3ZyOiB0cnVlLCBtZW1iZXJzOiBb
+        eyBfaWQgOiAwLCBob3N0IDogXCJtb25nby1jZmcwXCIgfSx7IF9pZCA6IDEsIGhvc3QgOiBcIm1v
+        bmdvLWNmZzFcIiB9LCB7IF9pZCA6IDIsIGhvc3QgOiBcIm1vbmdvLWNmZzJcIiB9XX0pJyB8IG1v
+        bmdvIC0taG9zdCBtb25nby1jZmcwIgo=
+    register: result
+  - debug: var=result.stdout_lines
+  - name: check config servers pool
+    #docker run --network=mongo_stacknet  -ti mongo  bash -c "echo 'rs.status()' | mongo --host mongo-cfg0"
+    remote_user: anatoli
+    shell: docker run --network=mongo_stacknet  -ti mongo  bash -c "echo 'rs.status()' | mongo --host mongo-cfg0"
+    register: result
+  - debug: var=result.stdout_lines
+  - name: add shards to balancer
+    remote_user: anatoli
+    #docker run --network=mongo_stacknet  -ti mongo  bash -c "echo -e 'sh.status()\nsh.addShard(\"a/mongo-a0\")\nsh.addShard(\"b/mongo-b0\")\nsh.status()' | mongo --host balancer"
+    shell: !!binary |
+        ZG9ja2VyIHJ1biAtLW5ldHdvcms9bW9uZ29fc3RhY2tuZXQgIC10aSBtb25nbyAgYmFzaCAtYyAi
+        ZWNobyAtZSAnc2guc3RhdHVzKClcbnNoLmFkZFNoYXJkKFwiYS9tb25nby1hMFwiKVxuc2guYWRk
+        U2hhcmQoXCJiL21vbmdvLWIwXCIpXG5zaC5zdGF0dXMoKScgfCBtb25nbyAtLWhvc3QgYmFsYW5j
+        ZXIiCg==
+    register: result
+  - debug: var=result.stdout_lines
+  - name: change chanksize
+    remote_user: anatoli
+    #docker run --network=mongo_stacknet  -ti mongo  bash -c "echo -e 'use config\ndb.settings.find({\"_id\": \"chunksize\"})\n
+    #db.settings.save({\"_id\": \"chunksize\", value: 1})\n use shardTestDB)' | mongo --host balancer"
+    shell: !!binary |
+        ZG9ja2VyIHJ1biAtLW5ldHdvcms9bW9uZ29fc3RhY2tuZXQgIC10aSBtb25nbyAgYmFzaCAtYyAi
+        ZWNobyAtZSAndXNlIGNvbmZpZ1xuZGIuc2V0dGluZ3MuZmluZCh7XCJfaWRcIjogXCJjaHVua3Np
+        emVcIn0pXG5kYi5zZXR0aW5ncy5zYXZlKHtcIl9pZFwiOiBcImNodW5rc2l6ZVwiLCB2YWx1ZTog
+        MX0pXG4gdXNlIHNoYXJkVGVzdERCKScgfCBtb25nbyAtLWhvc3QgYmFsYW5jZXIiCg==
+    register: result
+  - debug: var=result.stdout_lines
+  - name: Create collection and fullfill with data
+    remote_user: anatoli
+    #docker run --network=mongo_stacknet  -ti mongo  bash -c "echo -e 'use shardTestDB\nsh.enableSharding(\"shardTestDB\")\n
+    #sh.shardCollection(\"shardTestDB.users\", {\"username\": 1})\nfor(var i=0; i<100000; i++){db.users.insert
+    #({\"username\": \"user\"+i, \"created at\" : new    Date()}) }\n sh.status()' | mongo --host balancer"
+    shell: !!binary |
+        ZG9ja2VyIHJ1biAtLW5ldHdvcms9bW9uZ29fc3RhY2tuZXQgIC10aSBtb25nbyAgYmFzaCAtYyAi
+        ZWNobyAtZSAndXNlIHNoYXJkVGVzdERCXG5zaC5lbmFibGVTaGFyZGluZyhcInNoYXJkVGVzdERC
+        XCIpXG5zaC5zaGFyZENvbGxlY3Rpb24oXCJzaGFyZFRlc3REQi51c2Vyc1wiLCB7XCJ1c2VybmFt
+        ZVwiOiAxfSlcbmZvcih2YXIgaT0wOyBpPDEwMDAwMDsgaSsrKXtkYi51c2Vycy5pbnNlcnQoe1wi
+        dXNlcm5hbWVcIjogXCJ1c2VyXCIraSwgXCJjcmVhdGVkIGF0XCIgOiBuZXcgICAgRGF0ZSgpfSkg
+        fVxuIHNoLnN0YXR1cygpJyB8IG1vbmdvIC0taG9zdCBiYWxhbmNlciIK
+    register: result
+  - debug: var=result.stdout_lines
+  - name: Check status and balancing of data
+    remote_user: anatoli
+    #docker run --network=mongo_stacknet  -ti mongo  bash -c "echo -e 'sh.status()' | mongo --host balancer"
+    shell: docker run --network=mongo_stacknet  -ti mongo  bash -c "echo -e 'sh.status()' | mongo --host balancer"
+    register: result
+  - debug: var=result.stdout_lines
+
