@@ -24,6 +24,10 @@
                - stacknet
              command: mongod --configsvr --bind_ip_all --port 27017 --replSet c 
              deploy:
+               resources:
+                  limits:
+                    cpus: '6'
+                    memory: 6G
                replicas: 1
                update_config:
                  parallelism: 3
@@ -37,6 +41,10 @@
                - stacknet
              command: mongod --configsvr --bind_ip_all --port 27017 --replSet c
              deploy:
+               resources:
+                 limits:
+                    cpus: '6'
+                    memory: 6G
                replicas: 1
                update_config:
                  parallelism: 3
@@ -50,6 +58,10 @@
                - stacknet
              command: mongod --configsvr --bind_ip_all --port 27017 --replSet c
              deploy:
+               resources:
+                 limits:
+                    cpus: '6'
+                    memory: 6G
                replicas: 1
                update_config:
                  parallelism: 3
@@ -64,6 +76,10 @@
                - stacknet
              command: mongod --shardsvr --bind_ip_all --port 27017 --replSet a --smallfiles --oplogSize 50
              deploy:
+               resources:
+                 limits:
+                    cpus: '6'
+                    memory: 6G
                replicas: 1
                update_config:
                  parallelism: 3
@@ -77,6 +93,10 @@
                - stacknet
              command: mongod --shardsvr --bind_ip_all --port 27017 --replSet a --smallfiles --oplogSize 50
              deploy:
+               resources:
+                 limits:
+                    cpus: '6'
+                    memory: 6G
                replicas: 1
                update_config:
                  parallelism: 3
@@ -90,6 +110,10 @@
                - stacknet
              command: mongod --shardsvr --bind_ip_all --port 27017 --replSet a --smallfiles --oplogSize 50
              deploy:
+               resources:
+                 limits:
+                    cpus: '6'
+                    memory: 6G
                replicas: 1
                update_config:
                  parallelism: 3
@@ -103,6 +127,10 @@
                - stacknet
              command: mongod --shardsvr --bind_ip_all --port 27017 --replSet b --smallfiles --oplogSize 50
              deploy:
+               resources:
+                 limits:
+                    cpus: '6'
+                    memory: 6G
                replicas: 1
                update_config:
                  parallelism: 3
@@ -116,6 +144,10 @@
                - stacknet
              command: mongod --shardsvr --bind_ip_all --port 27017 --replSet b --smallfiles --oplogSize 50
              deploy:
+               resources:
+                 limits:
+                    cpus: '6'
+                    memory: 6G
                replicas: 1
                update_config:
                  parallelism: 3
@@ -129,6 +161,10 @@
                - stacknet
              command: mongod --shardsvr --bind_ip_all --port 27017 --replSet b --smallfiles --oplogSize 50
              deploy:
+               resources:
+                 limits:
+                    cpus: '6'
+                    memory: 6G
                replicas: 1
                update_config:
                  parallelism: 3
@@ -148,6 +184,10 @@
                - mongo-cfg2 
              command: mongos --configdb c/mongo-cfg0:27017,mongo-cfg1:27017,mongo-cfg2:27017 --bind_ip_all --port 27017 
              deploy:
+               resources:
+                 limits:
+                    cpus: '6'
+                    memory: 6G
                replicas: 3
                update_config:
                  parallelism: 3
