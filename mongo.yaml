@@ -256,6 +256,10 @@
         U2hhcmQoXCJiL21vbmdvLWIwXCIpXG5zaC5zdGF0dXMoKScgfCBtb25nbyAtLWhvc3QgYmFsYW5j
         ZXIiCg==
     register: result
+    retries: 5
+    delay: 10
+    until: result.stdout.find("failed") == -1
+    ignore_errors: true
   - debug: var=result.stdout_lines
   - name: change chanksize
     remote_user: anatoli
